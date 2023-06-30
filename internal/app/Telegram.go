@@ -11,7 +11,7 @@ import (
 func (app *Application) send(TecalTime time.Time, Message string) error {
 	return app.TG.Send(
 		context.Background(),
-		"Отчёт за "+TecalTime.Format("15:04 02:01:2006"),
+		"Отчёт за "+TecalTime.Format("15:04 02.01.2006"),
 		Message,
 	)
 }

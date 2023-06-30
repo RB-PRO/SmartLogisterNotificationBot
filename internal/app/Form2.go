@@ -36,40 +36,14 @@ func (app *Application) Report2(DataDate time.Time) (string, error) {
 	}
 
 	// Формирование сообщения
-	var Message string
-	Message += fmt.Sprintf("За %v  | #лиды2023\n\n", DataDate.Format("02.01"))
-	Message += "Логистика:\n"
-	Message += fmt.Sprintf("- Формы: %d (%d)\n", LeadsForm.Total, IsGood(LeadsForm))
-	Message += fmt.Sprintf("- Звонки: %d (%d)\n", LeadsCall.Total, IsGood(LeadsCall))
-	Message += fmt.Sprintf("- Инфо: %d (%d)\n", LeadsInfo.Total, IsGood(LeadsInfo))
-	Message += fmt.Sprintf("- ИТОГО: %d (%d)\n", LeadsForm.Total+LeadsCall.Total+LeadsInfo.Total, IsGood(LeadsForm)+IsGood(LeadsCall)+IsGood(LeadsInfo))
+	Message := `Результаты на %v:
 
-	// 	Message := `За %v  | #лиды2023
+	%d форм
+	%d звонка
+	%d инфо
 
-	// Логистика:
-	// - Формы: 6 (5)
-	// - Звонки: 3 (2)
-	// - Инфо: 2 (2)
-	// ИТОГО: 11 (9)
-	// Расход = 23 673 руб (без учета ТО и Выкупа)
-	// Стоимость 1 лида = 2 152 руб
-	// Общий тек. расход за 06.23 = 642 373 руб
-	// - - - - - - - - - - - - - - - -
-	// Таможенное оформление:
-	// - Формы: 0 (0)
-	// - Звонки: 0 (0)
-	// - Инфо: 0 (0)
-	// ИТОГО: 0 (0)
-	// Расход всего = 5 031 руб
-	// Расход за мес = 58 185 руб
-	// - - - - - - - - - - - - - - - -
-	// Выкуп товара:
-	// - Формы: 3 (2)
-	// - Звонки: 0 (0)
-	// - Инфо: 0 (0)
-	// ИТОГО: 3 (2)
-	// Расход = 4 060 руб
-	// Расход за мес = 48 091 руб`
+	ИТОГО: %d`
+	Message = fmt.Sprintf(Message, DataDate.Format("15:04 02.01.2006"), LeadsForm.Total, LeadsCall.Total, LeadsInfo.Total, LeadsForm.Total+LeadsCall.Total+LeadsInfo.Total)
 
 	return Message, nil
 }

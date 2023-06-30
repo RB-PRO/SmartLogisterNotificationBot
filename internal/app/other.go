@@ -9,10 +9,11 @@ import (
 
 // Данные, которые необходимы для запуска приложения
 type Authorization struct {
-	ChatID        int64    `json:"ChatID"`        // ID чата, в который надо отправлять сообщение
-	TelegramToken string   `json:"TelegramToken"` // Токен для телеграм бота
-	BitrixToken   string   `json:"BitrixToken"`   // Ссылка на битрикс
-	Companys      []string `json:"Companys"`      // Рекламные компании
+	ChatID            int64    `json:"ChatID"`            // ID чата, в который надо отправлять сообщение
+	TelegramToken     string   `json:"TelegramToken"`     // Токен для телеграм бота
+	BitrixToken       string   `json:"BitrixToken"`       // Ссылка на битрикс
+	YandexDirectToken string   `json:"YandexDirectToken"` // Токен яндекс директа
+	Companys          []string `json:"Companys"`          // Рекламные компании
 }
 
 // Загрузить данные из файла

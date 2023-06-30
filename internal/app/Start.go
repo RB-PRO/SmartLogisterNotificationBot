@@ -21,12 +21,12 @@ func Start() {
 		panic(ErrApp)
 	}
 
-	/////////////////////////////////////////
+	c := cron.New() 
 
 	// Отправка первой формы
-	// c.AddFunc("0 0 10 * *", func() {
-	Time1 := time.Now().AddDate(0, 0, -1)
-	fmt.Println(Time1)
+	c.AddFunc("0 0 10 * *", func() {
+	Time1 := time.Now()
+	// Time1 := time.Date(2023, time.June, 23, 0, 0, 0, 0, time.UTC)
 	Report1, ErrReport1 := app.Report1(Time1)
 	if ErrReport1 != nil {
 		log.Println(ErrReport1)
@@ -36,11 +36,9 @@ func Start() {
 			log.Println(ErrSend)
 		}
 	}
-	// })
+	})
+ 
 
-	/////////////////////////////////////////
-
-	c := cron.New()
 
 	// Отправка второй формы
 	c.AddFunc("0 0 11,15,18 * *", func() {

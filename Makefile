@@ -20,12 +20,7 @@ pushCar:
 
 build-config:
 	go env GOOS GOARCH
-
-build-linux-osx:
-	export GOARCH=arm
-	export GOOS=linux
-	go env GOOS GOARCH
-	go build ./cmd/main/main.go  
+ 
 
 build-windows-linux:
 	set GOARCH=amd64
