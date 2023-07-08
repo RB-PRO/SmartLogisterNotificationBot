@@ -5,12 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RB-PRO/SmartLogisterNotificationBot/pkg/bitrix"
 	"github.com/RB-PRO/SmartLogisterNotificationBot/pkg/direct"
 )
 
 // Отправить отчёт по первой форме
 func (app *Application) Report1(DataDate time.Time) (string, error) {
 
+	// Битрикс за день
 	// Лиды звонков
 	ReqCall := make(map[string]string)
 	ReqCall["filter[SOURCE_ID]"] = "CALL"
@@ -35,9 +37,18 @@ func (app *Application) Report1(DataDate time.Time) (string, error) {
 	if ErrCrmLeadListForm != nil {
 		return "", ErrCrmLeadListForm
 	}
+	// fmt.Printf("LeadsForm %+#v\n", LeadsForm.Result[0].UfCrm1688477669)
+	// fmt.Println("len(LeadsCall.Result)", len(LeadsCall.Result))
+	// fmt.Println("len(LeadsInfo.Result)", len(LeadsInfo.Result))
+	// fmt.Println("len(LeadsForm.Result)", len(LeadsForm.Result))
+	// for i, val := range LeadsForm.Result {
+	// 	fmt.Println(i, val.StatusID, val.SourceID, "-", val.Name)
+	// }
+	// fmt.Println("CoutGood", CoutGood(LeadsForm))
+	// fmt.Println("CoutBad", CoutBad(LeadsForm))
+	// fmt.Println("CoutIndefinite", CoutIndefinite(LeadsForm))
 
 	// Яндекс запросы
-
 	// Получение денных за месяц
 	DateFrom := time.Date(DataDate.Year(), DataDate.Month(), 1, 0, 0, 0, 0, DataDate.Location())
 	DateTo := time.Date(DataDate.Year(), DataDate.Month(), LastDayOfMonth(DataDate), 0, 0, 0, 0, DataDate.Location())
@@ -93,10 +104,16 @@ func (app *Application) Report1(DataDate time.Time) (string, error) {
 	var Message string
 	Message += fmt.Sprintf("За %v  | #лиды%d\n\n", DataDate.Format("02.01"), DataDate.Year())
 	Message += "Логистика:\n"
-	Message += fmt.Sprintf("- Формы: %d (%d)\n", LeadsForm.Total, IsGood(LeadsForm))
-	Message += fmt.Sprintf("- Звонки: %d (%d)\n", LeadsCall.Total, IsGood(LeadsCall))
-	Message += fmt.Sprintf("- Инфо: %d (%d)\n", LeadsInfo.Total, IsGood(LeadsInfo))
-	Message += fmt.Sprintf("ИТОГО: %d (%d)\n", LeadsForm.Total+LeadsCall.Total+LeadsInfo.Total, IsGood(LeadsForm)+IsGood(LeadsCall)+IsGood(LeadsInfo))
+	Message += KlasterLeads("- Формы: %d (%d/%d/%d)\n", LeadsForm)
+	Message += KlasterLeads("- Звонки: %d (%d/%d/%d)\n", LeadsCall)
+	Message += KlasterLeads("- Инфо: %d (%d/%d/%d)\n", LeadsInfo)
+
+	// Подсчёт суммарного зн-я
+	TotalLeads := LeadsForm
+	TotalLeads.Result = append(TotalLeads.Result, LeadsCall.Result...)
+	TotalLeads.Result = append(TotalLeads.Result, LeadsInfo.Result...)
+	TotalLeads.Total += LeadsCall.Total + LeadsInfo.Total
+	Message += KlasterLeads("ИТОГО: %d (%d/%d/%d)\n", TotalLeads)
 	var Other float64
 	for _, company := range app.Companys {
 		Other += SumCoast(DirectDay, company)
@@ -106,18 +123,28 @@ func (app *Application) Report1(DataDate time.Time) (string, error) {
 	Message += fmt.Sprintf("Расход = %.0f руб (без учета ТО и Выкупа)\n", Rashod)
 	Message += fmt.Sprintf("Стоимость 1 лида = %.0f руб\n", Rashod/float64(LeadsForm.Total+LeadsCall.Total+LeadsInfo.Total))
 	Message += fmt.Sprintf("Общий тек. расход за %s = %.0f руб\n", DataDate.Format("02.01"), SumCoast(DirectMouth, ""))
-	for _, company := range app.Companys {
+	for _, company := range app.Companyss {
+		fmt.Println(company.Telegram)
 		Message += "- - - - - - - - - - - - - - - -\n"
-		Message += company + ":\n"
-		Message += fmt.Sprintf("- Формы: %d (%d)\n", LeadsForm.Total, IsGood(LeadsForm))
-		Message += fmt.Sprintf("- Звонки: %d (%d)\n", LeadsCall.Total, IsGood(LeadsCall))
-		Message += fmt.Sprintf("- Инфо: %d (%d)\n", LeadsInfo.Total, IsGood(LeadsInfo))
-		Message += fmt.Sprintf("ИТОГО: %d (%d)\n", LeadsForm.Total+LeadsCall.Total+LeadsInfo.Total, IsGood(LeadsForm)+IsGood(LeadsCall)+IsGood(LeadsInfo))
+		Message += company.Telegram + ":\n"
+		Message += KlasterLeads("- Формы: %d (%d/%d/%d)\n", Filtered(LeadsForm, company.Bitrix))
+		Message += KlasterLeads("- Звонки: %d (%d/%d/%d)\n", Filtered(LeadsCall, company.Bitrix))
+		Message += KlasterLeads("- Инфо: %d (%d/%d/%d)\n", Filtered(LeadsInfo, company.Bitrix))
+		// Подсчёт суммарного зн-я
+		TotalLeads := LeadsForm
+		TotalLeads.Result = append(TotalLeads.Result, LeadsCall.Result...)
+		TotalLeads.Result = append(TotalLeads.Result, LeadsInfo.Result...)
+		TotalLeads.Total += LeadsCall.Total + LeadsInfo.Total
+		Message += KlasterLeads("ИТОГО: %d (%d/%d/%d)\n", Filtered(TotalLeads, company.Bitrix))
 
-		Message += fmt.Sprintf("Расход всего = %.0f руб\n", SumCoast(DirectDay, company))
-		Message += fmt.Sprintf("Расход за мес = %.0f руб\n", SumCoast(DirectMouth, company))
+		Message += fmt.Sprintf("Расход всего = %.0f руб\n", SumCoast(DirectDay, company.Yandex))
+		Message += fmt.Sprintf("Расход за мес = %.0f руб\n", SumCoast(DirectMouth, company.Yandex))
 	}
 	return Message, nil
+}
+
+func KlasterLeads(format string, leads bitrix.CrmLeadListRes) string {
+	return fmt.Sprintf(format, leads.Total, CoutGood(leads), CoutBad(leads), CoutIndefinite(leads))
 }
 
 func LastDayOfMonth(t time.Time) int {

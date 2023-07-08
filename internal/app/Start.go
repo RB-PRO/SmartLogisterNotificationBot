@@ -21,24 +21,23 @@ func Start() {
 		panic(ErrApp)
 	}
 
-	c := cron.New() 
+	c := cron.New()
 
 	// Отправка первой формы
 	c.AddFunc("0 0 10 * *", func() {
-	Time1 := time.Now()
-	// Time1 := time.Date(2023, time.June, 23, 0, 0, 0, 0, time.UTC)
-	Report1, ErrReport1 := app.Report1(Time1)
-	if ErrReport1 != nil {
-		log.Println(ErrReport1)
-	} else {
-		ErrSend := app.send(Time1, Report1)
-		if ErrSend != nil {
-			log.Println(ErrSend)
+		Time1 := time.Now()
+		Time1 = Time1.AddDate(0, 0, -1)
+		// Time1 := time.Date(2023, time.June, 23, 0, 0, 0, 0, time.UTC)
+		Report1, ErrReport1 := app.Report1(Time1)
+		if ErrReport1 != nil {
+			log.Println(ErrReport1)
+		} else {
+			ErrSend := app.send(Time1, Report1)
+			if ErrSend != nil {
+				log.Println(ErrSend)
+			}
 		}
-	}
 	})
- 
-
 
 	// Отправка второй формы
 	c.AddFunc("0 0 11,15,18 * *", func() {

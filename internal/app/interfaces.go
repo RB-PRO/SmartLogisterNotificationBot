@@ -15,6 +15,11 @@ type Application struct {
 	TG            *telegram.Telegram // Телеграм-нотификатор
 	YD            *direct.YanDir     // Яндекс-директ
 	Companys      []string           // Все компании
+	Companyss     []struct {
+		Telegram string `json:"telegram"`
+		Yandex   string `json:"yandex"`
+		Bitrix   int    `json:"bitrix"`
+	} `json:"Companyss"`
 }
 
 // Создать приложение телеграм бота со всеми авторизациями
@@ -35,5 +40,5 @@ func NewApplication(auf Authorization) (*Application, error) {
 	// Яндекс директ
 	YD := direct.NewYandexDirectClient(auf.YandexDirectToken)
 
-	return &Application{B24: b, TG: TG, YD: YD, Companys: auf.Companys}, nil
+	return &Application{B24: b, TG: TG, YD: YD, Companys: auf.Companys, Companyss: auf.Companyss}, nil
 }
