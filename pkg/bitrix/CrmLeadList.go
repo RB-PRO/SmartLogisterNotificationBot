@@ -128,7 +128,7 @@ type CrmLeadListRes struct {
 		ParentID137        any    `json:"PARENT_ID_137"`
 		LastActivityBy     string `json:"LAST_ACTIVITY_BY"`
 		// LastActivityTime    time.Time `json:"LAST_ACTIVITY_TIME"`
-		UfCrm1688477669 []int `json:"UF_CRM_1688477669"`
+		UfCrm1688477669 interface{} `json:"UF_CRM_1688477669"`
 	} `json:"result"`
 	Total int `json:"total"`
 	// Time  struct {

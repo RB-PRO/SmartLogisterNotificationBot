@@ -9,25 +9,20 @@ go build cmd/main/main.go
 ./main
 ```
 
-### Команды для бота
+### Режимы отчётов
 
-* **start** - запустить бота;
-* **example** - Примердля загрузки данных;
-* **using** - Туториал. Как загрузить подпись на яндекс почту.
+* **10:00** - Основной отчёт по первой форме;
+* **11:00, 15:00, 18:00** - Второстепенные отчёт по второй форме.
 
 ### Состав проекта
 
 * [cmd ](cmd/main/main.go)- верхний уровень проекта, который запускает имполняемый middle layer;
 * [internal ](internai/app)- middle layer, само ядро программы, которое использует функции из pkg;
-* [imgbb](pkg/imgbb) - Пакет для работы с [imgBB](https://imgbb.com/);
-* [signature](pkg/signature) - Редактир [html-подписи](html.txt);
-* [html.txt](html.txt) - Сам html-код письма, который используется как шаблон для подписи;
-* [pp1.png](pp1.png), [pp2.png](pp2.png), [pp3.png](pp3.png) - Картинки для бота в туториале;
-* 
+* [bitrix](pkg/bitrix) - Пакет для работы с [api bitrix](https://dev.1c-bitrix.ru/api_help/);
+* [direct](pkg/direct) - Пакет для работы с [api bitrix](https://yandex.ru/dev/direct/);
 
 ### Скриншоты
 
-Бот доступен по [ссылке](https://t.me/HintHeroBothttps://t.me/HintHeroBot).
+Бот доступен по [ссылке](https://t.me/SmartLogisterNotificationBot).
 
-| ![image](https://user-images.githubusercontent.com/33092641/215992158-a5986084-2b70-4963-a9e0-9fe831f02076.png) | ![image](https://user-images.githubusercontent.com/33092641/215992526-c434110b-14cb-4078-b9bf-36b2c56500a4.png) |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+![1689057836761](image/README/1689057836761.png)

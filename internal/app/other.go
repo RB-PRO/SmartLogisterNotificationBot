@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -155,9 +156,19 @@ func IsIndefinite(SourceID string) bool {
 func Filtered(leads bitrix.CrmLeadListRes, UF_CRM int) bitrix.CrmLeadListRes {
 	var NewLeads bitrix.CrmLeadListRes
 	for _, val := range leads.Result {
-		if contains(val.UfCrm1688477669, UF_CRM) {
-			NewLeads.Result = append(NewLeads.Result, val)
+
+		switch x := val.UfCrm1688477669.(type) {
+		case []int:
+			if contains(x, UF_CRM) {
+				NewLeads.Result = append(NewLeads.Result, val)
+			}
+		default:
+			fmt.Printf("Unsupported type: %T UfCrm1688477669\n", x)
 		}
+
+		// if contains(val.UfCrm1688477669, UF_CRM) {
+		// 	NewLeads.Result = append(NewLeads.Result, val)
+		// }
 	}
 	NewLeads.Total = len(NewLeads.Result)
 	return NewLeads
